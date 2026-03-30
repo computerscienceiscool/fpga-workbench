@@ -50,6 +50,13 @@ if [ ! -d "i2cslave" ]; then
   }
 fi
 
+# Python testbench tooling (cocotb)
+# cocotb lets you write Verilog/VHDL testbenches in Python using iverilog as the simulator.
+# cocotb-bus adds reusable bus interfaces (I2C, SPI, AXI, etc.) for integration tests.
+# Versions pinned for reproducible builds per project policy.
+echo "--- Installing cocotb ---"
+pip install cocotb==2.0.1 cocotb-bus==0.3.0 --break-system-packages
+
 # Verify tools
 echo "--- Verifying tools ---"
 echo -n "  yosys: "; yosys --version 2>/dev/null || echo "NOT FOUND"
@@ -57,6 +64,7 @@ echo -n "  nextpnr-ice40: "; nextpnr-ice40 --version 2>/dev/null || echo "NOT FO
 echo -n "  icepack: "; which icepack 2>/dev/null || echo "NOT FOUND"
 echo -n "  iceprog: "; which iceprog 2>/dev/null || echo "NOT FOUND"
 echo -n "  iverilog: "; iverilog -V 2>/dev/null | head -1 || echo "NOT FOUND"
-echo -n "  gtkwave: "; which gtkwave 2>/dev/null || echo "NOT FOUND (optional, for waveform viewing)"
+echo -n "  cocotb: "; cocotb-config --version 2>/dev/null || echo "NOT FOUND"
+echo -n "  gtkwave: "; which gtkwave 2>/dev/null || echo "NOT FOUND (optional, VaporView extension is available instead)"
 
 echo "=== FPGA Codespace Setup Complete ==="
