@@ -14,7 +14,9 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "mshr-h.veriloghdl"
+        "mshr-h.veriloghdl",
+        "lramseyer.vaporview",
+        "surfer-project.surfer"
       ]
     }
   }
