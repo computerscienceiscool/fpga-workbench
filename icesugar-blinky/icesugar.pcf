@@ -1,0 +1,21 @@
+# IceSugar Board (iCE40UP5K-QFN48) Pin Constraints
+# Source: https://github.com/wuxx/icesugar/blob/master/src/common/io.pcf
+#
+# On-board RGB LED -- accent active-low (drive low to turn ON)
+
+set_io LED_R    40
+set_io LED_G    41
+set_io LED_B    39
+
+# 12 MHz on-board oscillator
+set_io clk      35
+
+# DIP switches
+set_io SW[0]    18
+set_io SW[1]    19
+set_io SW[2]    20
+set_io SW[3]    21
+
+# UART (directly connected to iCELink USB-UART bridge)
+set_io RX       4
+set_io TX       6

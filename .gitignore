@@ -1,0 +1,12 @@
+# Synthesis outputs
+*.json
+*.asc
+*.bin
+*.rpt
+
+# Simulation outputs
+*.vcd
+*_tb
+
+# OS
+.DS_Store

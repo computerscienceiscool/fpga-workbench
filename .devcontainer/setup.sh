@@ -56,5 +56,7 @@ echo -n "  yosys: "; yosys --version 2>/dev/null || echo "NOT FOUND"
 echo -n "  nextpnr-ice40: "; nextpnr-ice40 --version 2>/dev/null || echo "NOT FOUND"
 echo -n "  icepack: "; which icepack 2>/dev/null || echo "NOT FOUND"
 echo -n "  iceprog: "; which iceprog 2>/dev/null || echo "NOT FOUND"
+echo -n "  iverilog: "; iverilog -V 2>/dev/null | head -1 || echo "NOT FOUND"
+echo -n "  gtkwave: "; which gtkwave 2>/dev/null || echo "NOT FOUND (optional, for waveform viewing)"
 
 echo "=== FPGA Codespace Setup Complete ==="
