@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -euo pipefail # Make the script exit on errors, undefined variables, and failed pipes
 
 echo "=== FPGA Codespace Setup ==="
 
@@ -7,6 +7,15 @@ SUDO=""
 if [ "$(id -u)" -ne 0 ]; then
   SUDO="sudo"
 fi
+
+# oss-cad-suite (Yosys, nextpnr, icepack, iceprog)
+# Latest release: https://github.com/YosysHQ/oss-cad-suite-build/releases
+OSS_CAD_DATE="2026-03-07"
+OSS_CAD_DATE_COMPACT="20260307"
+OSS_CAD_URL="https://github.com/YosysHQ/oss-cad-suite-build/releases/download/${OSS_CAD_DATE}/oss-cad-suite-linux-x64-${OSS_CAD_DATE_COMPACT}.tgz"
+OSS_CAD_DIR="/opt/oss-cad-suite"
+OSS_CAD_BIN="${OSS_CAD_DIR}/bin"
+PROFILE_SCRIPT="/etc/profile.d/oss-cad-suite.sh"
 
 # System tools
 echo "--- Installing system tools ---"
@@ -16,27 +25,38 @@ $SUDO apt-get install -y -qq \
   curl \
   wget \
   git \
-  jq
+  jq \
+  python3-pip
 
-# oss-cad-suite (Yosys, nextpnr, icepack, iceprog)
-# Latest release: https://github.com/YosysHQ/oss-cad-suite-build/releases
+
 echo "--- Installing oss-cad-suite ---"
-OSS_CAD_DATE="2026-03-07"
-OSS_CAD_DATE_COMPACT="20260307"
-OSS_CAD_URL="https://github.com/YosysHQ/oss-cad-suite-build/releases/download/${OSS_CAD_DATE}/oss-cad-suite-linux-x64-${OSS_CAD_DATE_COMPACT}.tgz"
+if [ -x "${OSS_CAD_BIN}/iverilog" ]; then
+  echo "  oss-cad-suite already installed, skipping"
+else
+  TMP_TGZ="/tmp/oss-cad-suite.tgz"
 
-cd /opt
-echo "  Downloading from ${OSS_CAD_URL}..."
-wget -q "${OSS_CAD_URL}" -O oss-cad-suite.tgz || {
-  echo "ERROR: Could not download oss-cad-suite"
-  echo "Check https://github.com/YosysHQ/oss-cad-suite-build/releases for latest version"
-  exit 1
-}
-echo "  Extracting..."
-tar xzf oss-cad-suite.tgz
-rm oss-cad-suite.tgz
+  echo "  Downloading from ${OSS_CAD_URL}..."
+  wget -q "${OSS_CAD_URL}" -O "${TMP_TGZ}" || {
+    echo "ERROR: Could not download oss-cad-suite"
+    echo "Check https://github.com/YosysHQ/oss-cad-suite-build/releases for latest version"
+    exit 1
+  }
+
+  echo "  Preparing install location..."
+  $SUDO mkdir -p /opt
+
+  echo "  Extracting..."
+  $SUDO tar xzf "${TMP_TGZ}" -C /opt
+  rm -f "${TMP_TGZ}"
+fi
 
 # Add to PATH for all users
+echo "--- Configuring PATH ---"
+
+if ! grep -q "oss-cad-suite/bin" /home/vscode/.bashrc; then
+  echo 'export PATH="/opt/oss-cad-suite/bin:$PATH"' >> /home/vscode/.bashrc
+fi
+
 echo 'export PATH="/opt/oss-cad-suite/bin:$PATH"' | $SUDO tee /etc/profile.d/oss-cad-suite.sh > /dev/null
 export PATH="/opt/oss-cad-suite/bin:$PATH"
 
@@ -55,7 +75,11 @@ fi
 # cocotb-bus adds reusable bus interfaces (I2C, SPI, AXI, etc.) for integration tests.
 # Versions pinned for reproducible builds per project policy.
 echo "--- Installing cocotb ---"
-pip install cocotb==2.0.1 cocotb-bus==0.3.0 --break-system-packages
+if python3 -c "import cocotb" >/dev/null 2>&1; then
+  echo "  cocotb already installed, skipping"
+else
+  pip install cocotb==2.0.1 cocotb-bus==0.3.0 --break-system-packages
+fi
 
 # Verify tools
 echo "--- Verifying tools ---"

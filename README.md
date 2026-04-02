@@ -32,3 +32,20 @@ See **[GUIDE.md](GUIDE.md)** for a full walkthrough of the toolchain, pin refere
 
 To update oss-cad-suite, edit `OSS_CAD_DATE` in `.devcontainer/setup.sh`.
 Releases: https://github.com/YosysHQ/oss-cad-suite-build/releases
+
+
+## Local Workflow (Draft)
+
+This is procedural draft is written for running local instance of dev container since there's limitations on the web-based instance.
+
+Local setup used to write this section: Macbook Pro 2019, Colima & Docker CLI, VSCode, Codex.
+
+In terminal
+
+`colima start`
+`docker ps`
+
+Open VSCode
+
+"Reopen in Container"
+
